@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Запрошення на весілля</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@0;1&family=Montserrat:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #f9f9f9;
+            --text-color: #1a1a1a;
+            --accent-color: #d4af37;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Montserrat', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow-x: hidden;
+        }
+
+        header {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            margin-bottom: 10px;
+            font-weight: 400;
+        }
+
+        .date {
+            font-size: 1.2rem;
+            letter-spacing: 5px;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+        }
+
+        /* Вінілова платівка */
+        .vinyl-container {
+            position: relative;
+            width: 200px;
+            height: 200px;
+            margin: 20px 0;
+            cursor: pointer;
+        }
+
+        .vinyl {
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, #333 10%, #111 11%, #111 20%, #222 21%, #111 30%, #222 31%, #111 40%);
+            border-radius: 50%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .vinyl-label {
+            width: 60px;
+            height: 60px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 0.6rem;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .spinning {
+            animation: rotate 4s linear infinite;
+        }
+
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* Таймер */
+        .timer-container {
+            display: flex;
+            gap: 20px;
+            margin: 40px 0;
+        }
+
+        .timer-item {
+            text-align: center;
+        }
+
+        .timer-num {
+            display: block;
+            font-size: 2rem;
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* Форма */
+        .form-section {
+            width: 100%;
+            max-width: 500px;
+            padding: 50px 20px;
+            text-align: center;
+        }
+
+        input, select, button {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            background: white;
+            font-family: inherit;
+        }
+
+        button {
+            background: var(--text-color);
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        button:hover {
+            background: var(--accent-color);
+        }
+
+        #status-msg {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: green;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <p>Запрошуємо на наше весілля</p>
+        <h1>Андрій & Олександра</h1>
+        <div class="date">Серпень 2026</div>
+
+        <div class="vinyl-container" onclick="toggleMusic()">
+            <div id="vinyl" class="vinyl">
+                <div class="vinyl-label">A & O<br>PLAY</div>
+            </div>
+        </div>
+        <p style="font-size: 0.8rem; color: #888;">натисніть, щоб увімкнути музику</p>
+
+        <div class="timer-container">
+            <div class="timer-item"><span id="days" class="timer-num">00</span>днів</div>
+            <div class="timer-item"><span id="hours" class="timer-num">00</span>год</div>
+            <div class="timer-item"><span id="mins" class="timer-num">00</span>хв</div>
+        </div>
+    </header>
+
+    <section class="form-section">
+        <h3>Підтвердіть вашу присутність</h3>
+        <form id="rsvp-form">
+            <input type="text" placeholder="Ваше ім'я та прізвище" required>
+            <select>
+                <option value="" disabled selected>Чи зможете ви бути?</option>
+                <option value="yes">Так, із задоволенням!</option>
+                <option value="no">На жаль, не зможу</option>
+            </select>
+            <select>
+                <option value="" disabled selected>Ваші вподобання у напоях</option>
+                <option value="wine">Вино</option>
+                <option value="whiskey">Міцні напої</option>
+                <option value="none">Безалкогольні</option>
+            </select>
+            <button type="button" onclick="submitForm()">Надіслати відповідь</button>
+            <div id="status-msg"></div>
+        </form>
+    </section>
+
+    <audio id="bg-music" loop>
+        <source src="https://www.bensound.com/bensound-music/bensound-love.mp3" type="audio/mpeg">
+    </audio>
+
+    <script>
+        // Музика та анімація
+        const music = document.getElementById('bg-music');
+        const vinyl = document.getElementById('vinyl');
+
+        function toggleMusic() {
+            if (music.paused) {
+                music.play();
+                vinyl.classList.add('spinning');
+            } else {
+                music.pause();
+                vinyl.classList.remove('spinning');
+            }
+        }
+
+        // Таймер до 1 серпня 2026 року
+        function updateTimer() {
+            const weddingDate = new Date('August 1, 2026 00:00:00').getTime();
+            const now = new Date().getTime();
+            const diff = weddingDate - now;
+
+            const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+
+            document.getElementById('days').innerText = d;
+            document.getElementById('hours').innerText = h;
+            document.getElementById('mins').innerText = m;
+        }
+        setInterval(updateTimer, 1000);
+        updateTimer();
+
+        // Форма
+        function submitForm() {
+            const msg = document.getElementById('status-msg');
+            msg.innerText = "Дякуємо! Ваша відповідь збережена.";
+            document.getElementById('rsvp-form').reset();
+        }
+    </script>
+</body>
+</html>
